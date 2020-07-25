@@ -4,34 +4,37 @@ import "./styles.css";
 import api from "./services/api";
 
 function App() {
-  const [projects, setProjects] = useState([]);
+  const [repos, setRepositories] = useState([]);
 
   useEffect(() => {
-    api.get('projects').then(response => {
-      setProjects(response.data);
+    api.get('repositories').then(response => {
+      setRepositories(response.data);
+      console.log(repos);
     });
   }, []);
 
   async function handleAddRepository() {
-    const response = await api.post('projects',{
-      title:"Desafio ReactJS",
-      owner: "Lucas Alison de Lima"
+    const response = await api.post('repositories',{
+      url: "https://github.com/josepholiveira",
+      title: "Desafio ReactJS",
+      techs: ["React", "Node.js"],
     });
 
-    const project = response.data;
+    const repository = response.data;
 
-    setProjects([...projects, project]);
+    setRepositories([...repos, repository]);
+    console.log(repos);
   }
 
   async function handleRemoveRepository(id) {
-    const response = await api.delete(`projects/${id}`);
+    const response = await api.delete(`repositories/${id}`);
 
-    if (response.status === 200){
-      const projectIndex = projects.findIndex(project => project.id === id);
+    if (response.status === 204){
+      const repositoryIndex = repos.findIndex(repository => repository.id === id);
     
-      if (projectIndex >= 0){
-        projects.splice(projectIndex, 1);
-        setProjects([...projects]);
+      if (repositoryIndex >= 0){
+        repos.splice(repositoryIndex, 1);
+        setRepositories([...repos]);
       }
     }
   }
@@ -40,10 +43,10 @@ function App() {
     <div>
       <ul data-testid="repository-list">
         {
-          projects.map(project => 
-            <li key={project.id}>
-              {project.title}
-              <button onClick={() => handleRemoveRepository(project.id)}>
+          repos.map(repository => 
+            <li key={repository.id}>
+              {repository.title}
+              <button onClick={() => handleRemoveRepository(repository.id)}>
                 Remover
               </button>
             </li>
